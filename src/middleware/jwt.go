@@ -20,7 +20,7 @@ var DefaultJWTConfig = middleware.JWTConfig{
 
 // Skipper 过滤
 func Skipper(c echo.Context) bool {
-	if c.Path() == "login" || c.Path() == "/signup" {
+	if c.Path() == "/api/v1/login" || c.Path() == "/api/v1/signup" {
 		return true
 	}
 	return false

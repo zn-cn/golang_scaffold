@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"time"
 	"util"
@@ -18,7 +19,7 @@ type User struct {
 	PhoneNumber string    `json:"phone_number" validate:"required"`
 	BcryptPW    string    `json:"bcrypt_pw" validate:"required"`
 	Group       string    `json:"group" validate:"required"`
-	Status      int       `json:"status" validate:"required"` // status: 0 没有认证通过，10: 普通用户, 100: 管理员
+	Status      int       `json:"status"` // status: 0 没有认证通过，10: 普通用户, 100: 管理员
 	CreateDate  time.Time `json:"create_date"`
 }
 
@@ -38,8 +39,9 @@ func GetUserInfo(c echo.Context) error {
 // 判断是否存在此用户
 func verifyUserExist(username string) (bool, error) {
 	var bcryptPW string
-	err := userDB.QueryRow("SELECT bcrypt_pw FROM user WHERE username=?", username).Scan(&bcryptPW)
+	err := userDB.QueryRow("SELECT bcrypt_pw FROM user WHERE name=?", username).Scan(&bcryptPW)
 	if err != nil || bcryptPW == "" {
+		fmt.Println(err)
 		return false, err
 	}
 	return true, nil

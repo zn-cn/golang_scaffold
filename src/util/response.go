@@ -16,5 +16,15 @@ func RetError(code, status int, errMsg string, c echo.Context) error {
 
 // RetData 数据返回
 func RetData(data interface{}, c echo.Context) error {
-	return c.JSON(http.StatusOK, data)
+	if data != nil {
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"status": 200,
+			"data":   data,
+		})
+	} else {
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"status": 200,
+		})
+	}
+
 }

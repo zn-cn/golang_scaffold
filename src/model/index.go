@@ -1,8 +1,10 @@
 package model
 
 import (
+	"config"
 	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 	"util"
@@ -14,15 +16,19 @@ import (
 var indexDB *sql.DB
 
 func init() {
+	var err error
 	indexDB, _ = util.GetDBSession()
-	userDB, _ = util.GetDBSession()
+	userDB, err = util.GetDBSession()
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 // Login index model
 func Login(c echo.Context) error {
 	user := map[string]string{
-		"username": "",
-		"pw":       "",
+		"name":      "",
+		"bcrypt_pw": "",
 	}
 	err := c.Bind(&user)
 	if err != nil {
@@ -30,20 +36,23 @@ func Login(c echo.Context) error {
 	}
 	var bcryptPW string
 	var status int
-	err = indexDB.QueryRow("SELECT bcrypt_pw, status FROM user WHERE username=?", user["username"]).Scan(&bcryptPW, &status)
+	err = indexDB.QueryRow("SELECT bcrypt_pw, status FROM user WHERE name=?", user["name"]).Scan(&bcryptPW, &status)
 	if err != nil {
+		fmt.Println(err)
 		return util.RetError(http.StatusBadRequest, 400, "密码验证错误", c)
 	}
-	if ok := util.CheckPasswordHash(user["pw"], bcryptPW); !ok {
+	if ok := util.CheckPasswordHash(user["bcrypt_pw"], bcryptPW); !ok {
+		fmt.Println("密码验证错误")
 		return util.RetError(http.StatusBadRequest, 400, "密码验证错误", c)
 	}
 
 	token := jwt.New(jwt.SigningMethodHS256)
 	// Set claims
 	claims := token.Claims.(jwt.MapClaims)
-	claims["name"] = user["username"]
+	claims["name"] = user["name"]
 	// 判断是否通过认证
 	if status < 10 {
+		fmt.Println("还没有认证")
 		return util.RetError(http.StatusBadRequest, 400, "还没有认证", c)
 	}
 	// 判断是否为管理员
@@ -54,7 +63,7 @@ func Login(c echo.Context) error {
 	}
 	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
 	// Generate encoded token and send it as response.
-	t, _ := token.SignedString([]byte("secret"))
+	t, _ := token.SignedString([]byte(config.Conf.SecretKey))
 
 	return util.RetData(map[string]interface{}{
 		"token": t,
@@ -74,7 +83,9 @@ func Register(c echo.Context) error {
 		return util.RetError(http.StatusBadRequest, 400, "参数错误", c)
 	}
 	// 注册
+
 	if err := DefaultRegister(userInfo); err != nil {
+		fmt.Println(err)
 		return util.RetError(http.StatusBadGateway, 500, "内部错误", c)
 	}
 	return util.RetData(nil, c)
@@ -82,11 +93,11 @@ func Register(c echo.Context) error {
 
 // DefaultRegister 默认注册器
 func DefaultRegister(user *User) error {
-	if ok, _ := verifyUserExist(user.Name); !ok {
+	if ok, _ := verifyUserExist(user.Name); ok {
 		return errors.New("此用户已经存在")
 	}
 	// insert
-	stmt, err := indexDB.Prepare("INSERT INTO user(name, nickname, email, phone_number, bcrypt_pw, group, status, create_date) VALUES(?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := indexDB.Prepare("INSERT INTO `user`(name, nickname, email, phone_number, bcrypt_pw, `group`, status, create_date) VALUES(?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return err
 	}

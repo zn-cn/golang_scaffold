@@ -36,7 +36,7 @@ type mysqlConf struct {
 func init() {
 
 	log.Println("init config")
-	Conf := &Config{
+	Conf = &Config{
 		Env:  "local",
 		Addr: ":1323",
 
@@ -44,7 +44,7 @@ func init() {
 			Host:       "localhost",
 			Port:       "3306",
 			DriverName: "mysql",
-			DBName:     "members",
+			DBName:     "member",
 			RootPW:     "37986712",
 		},
 		SecretKey: "secret-key",

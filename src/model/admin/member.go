@@ -22,7 +22,7 @@ func UpdateMemInfo(c echo.Context) error {
 	if err := c.Bind(&userInfo); err != nil {
 		return util.RetError(http.StatusBadRequest, 400, "参数错误", c)
 	}
-	if err := updateUserInfo(userInfo, userInfo["username"]); err != nil {
+	if err := updateUserInfo(userInfo, userInfo["name"]); err != nil {
 		return util.RetError(http.StatusBadGateway, 406, "参数错误或者服务器内部错误", c)
 	}
 	return util.RetData(nil, c)
@@ -31,12 +31,12 @@ func UpdateMemInfo(c echo.Context) error {
 // DeleteMem 删除成员
 func DeleteMem(c echo.Context) error {
 	user := map[string]string{
-		"username": "",
+		"name": "",
 	}
 	if err := c.Bind(&user); err != nil {
 		return util.RetError(http.StatusBadRequest, 400, "参数错误", c)
 	}
-	if err := delUser(user["username"]); err != nil {
+	if err := delUser(user["name"]); err != nil {
 		return util.RetError(http.StatusBadGateway, 407, "用户不存在或者服务器内部错误", c)
 	}
 	return util.RetData(nil, c)
@@ -70,16 +70,16 @@ func GetMemInfoByCon(c echo.Context) error {
 	return util.RetData(data, c)
 }
 
-func delUser(username string) error {
-	_, err := adminDB.Exec("DELETE FROM user WHERE username=?", username)
+func delUser(name string) error {
+	_, err := adminDB.Exec("DELETE FROM user WHERE name=?", name)
 	return err
 
 }
 
-func updateUserInfo(userInfo map[string]string, username string) error {
+func updateUserInfo(userInfo map[string]string, name string) error {
 	// 少了一层验证
 	for k, v := range userInfo {
-		if _, err := adminDB.Exec("UPDATE user SET "+k+"=? WHERE username=?", v, username); err != nil {
+		if _, err := adminDB.Exec("UPDATE user SET "+k+"=? WHERE name=?", v, name); err != nil {
 			return err
 		}
 	}

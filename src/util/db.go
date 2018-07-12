@@ -11,13 +11,17 @@ import (
 // 初始化MySQL数据库
 func init() {
 	conf := config.Conf
+	username := conf.MySQL.UserName
+	userpw := conf.MySQL.UserPW
 	db, err := sql.Open(conf.MySQL.DriverName, fmt.Sprintf("%s:%s@tcp(%s:%s)/?parseTime=true", username, userpw, conf.MySQL.Host, conf.MySQL.Port))
 	if err != nil {
 		return
 	}
-	db.Close()
-	db.Query("CREATE DATABASE IF NOT EXISTS member")
-	db.Query(`
+	defer db.Close()
+	fmt.Println("init db")
+	// 创建数据库
+	db.Exec("CREATE DATABASE IF NOT EXISTS member")
+	db.Exec(`
 		CREATE TABLE IF NOT EXISTS user (
 			id INT UNSIGNED AUTO_INCREMENT,
 			name VARCHAR(32) NOT NULL,
@@ -29,7 +33,7 @@ func init() {
 			status INT NOT NULL,
 			create_date DATE NOT NULL,
 			PRIMARY KEY(id)
-		)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		)ENGINE=InnoDB DEFAULT CHARSET=utf8
 		`)
 }
 
