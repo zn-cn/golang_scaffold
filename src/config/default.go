@@ -10,13 +10,19 @@ var Conf *Config
 
 // Config 配置
 type Config struct {
-	Env  string
-	Addr string
-
+	Env       string
+	Addr      string
 	MySQL     *mysqlConf
 	SecretKey string
+	EmailInfo emailInfo
 }
 
+type emailInfo struct {
+	From     string
+	To       []string
+	UserName string
+	EmailPW  string
+}
 type mysqlConf struct {
 	Host       string
 	Port       string
@@ -38,6 +44,8 @@ func init() {
 			Host:       "localhost",
 			Port:       "3306",
 			DriverName: "mysql",
+			DBName:     "members",
+			RootPW:     "37986712",
 		},
 		SecretKey: "secret-key",
 	}
@@ -60,6 +68,7 @@ func init() {
 }
 
 func initDBConf() {
+	log.Println("init dbconfig")
 	if v, ok := os.LookupEnv("MySQL_HOST"); ok {
 		Conf.MySQL.Host = v
 	}
