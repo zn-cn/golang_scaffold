@@ -25,6 +25,18 @@ func init() {
 }
 
 // Login index model
+// @Summary Login
+// @Description login by name and pw
+// @Tags user login
+// @Accept  json
+// @Produce  json
+// @Param name body string true "your unique name"
+// @Param bcrypt_pw body string true "your pw"
+// @Success 200 {object} util.DataRes
+// @Failure 400 {object} util.ErrorRes
+// @Failure 404 {object} util.ErrorRes
+// @Failure 500 {object} util.ErrorRes
+// @Router /api/v1/login [post]
 func Login(c echo.Context) error {
 	user := map[string]string{
 		"name":      "",
@@ -65,12 +77,31 @@ func Login(c echo.Context) error {
 	// Generate encoded token and send it as response.
 	t, _ := token.SignedString([]byte(config.Conf.SecretKey))
 
+	// 生成 csrf token
+	csrfToken := util.GetCSRFToken()
 	return util.RetData(map[string]interface{}{
 		"token": t,
+		"csrf":  csrfToken,
 	}, c)
 }
 
 // Register register model
+// @Summary Register
+// @Description register your account
+// @Tags user register
+// @Accept  json
+// @Produce  json
+// @Param name body string true "your unique name"
+// @Param bcrypt_pw body string true "your pw"
+// @Param nickname body string true "your nickname"
+// @Param email body string true "your email"
+// @Param phone_number body string true "your phone_number"
+// @Param group body string true "your group"
+// @Success 200 {object} util.DataRes
+// @Failure 400 {object} util.ErrorRes
+// @Failure 404 {object} util.ErrorRes
+// @Failure 500 {object} util.ErrorRes
+// @Router /api/v1/signup [post]
 func Register(c echo.Context) error {
 	userInfo := &User{}
 	if err := c.Bind(userInfo); err != nil {

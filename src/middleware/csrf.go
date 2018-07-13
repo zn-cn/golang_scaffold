@@ -7,7 +7,7 @@ import (
 
 // DefaultCSRFConfig 默认CSRFConfig
 var DefaultCSRFConfig = middleware.CSRFConfig{
-	Skipper:      middleware.DefaultSkipper,
+	Skipper:      Skipper,
 	TokenLength:  32,
 	TokenLookup:  "header:" + echo.HeaderXCSRFToken,
 	ContextKey:   "csrf",

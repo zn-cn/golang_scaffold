@@ -2,6 +2,7 @@ package admin
 
 import (
 	"database/sql"
+	"fmt"
 	"model"
 	"net/http"
 	"util"
@@ -60,8 +61,9 @@ func AddMem(c echo.Context) error {
 // GetMemInfoByCon 通过某种条件获取成员信息
 func GetMemInfoByCon(c echo.Context) error {
 	userInfo := map[string]string{}
-	if err := c.Bind(&userInfo); err != nil {
-		return util.RetError(http.StatusBadRequest, 400, "参数错误", c)
+	values := c.QueryParams()
+	for k, v := range values {
+		userInfo[k] = v[0]
 	}
 	data, err := getMemInfoByCon(userInfo)
 	if err != nil {
@@ -89,11 +91,15 @@ func updateUserInfo(userInfo map[string]string, name string) error {
 func getMemInfoByCon(userInfo map[string]string) (interface{}, error) {
 	whereStr := ""
 	for k, v := range userInfo {
-		whereStr += k + "=" + v
+		k = fmt.Sprintf("`%s`", k)
+		v = fmt.Sprintf("'%s'", v)
+		whereStr += k + "=" + v + " AND "
 	}
+	whereStr = whereStr[:(len(whereStr) - 5)]
 	usersInfo := []model.User{}
-	rows, err := adminDB.Query("SELECT name, nickname, email, group, phone_number, status, create_date FROM user WHERE " + whereStr)
+	rows, err := adminDB.Query("SELECT name, nickname, email, `group`, phone_number, status, create_date FROM user WHERE " + whereStr)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
@@ -101,6 +107,7 @@ func getMemInfoByCon(userInfo map[string]string) (interface{}, error) {
 		userInfo := model.User{}
 		err = rows.Scan(&userInfo.Name, &userInfo.Nickname, &userInfo.Email, &userInfo.Group, &userInfo.PhoneNumber, &userInfo.Status, &userInfo.CreateDate)
 		if err != nil {
+			fmt.Println(err)
 			return nil, err
 		}
 		usersInfo = append(usersInfo, userInfo)

@@ -1,0 +1,143 @@
+basePath: /v2
+definitions:
+  util.DataRes:
+    properties:
+      data:
+        type: object
+      status:
+        type: integer
+    type: object
+  util.ErrorRes:
+    properties:
+      errMsg:
+        type: string
+      status:
+        type: integer
+    type: object
+host: petstore.swagger.io
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server Petstore server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /api/v1/login:
+    post:
+      consumes:
+      - application/json
+      description: login by name and pw
+      parameters:
+      - description: your unique name
+        in: body
+        name: name
+        required: true
+        schema:
+          type: object
+      - description: your pw
+        in: body
+        name: bcrypt_pw
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.DataRes'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.ErrorRes'
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.ErrorRes'
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/util.ErrorRes'
+            type: object
+      summary: Login
+      tags:
+      - user login
+  /api/v1/signup:
+    post:
+      consumes:
+      - application/json
+      description: register your account
+      parameters:
+      - description: your unique name
+        in: body
+        name: name
+        required: true
+        schema:
+          type: object
+      - description: your pw
+        in: body
+        name: bcrypt_pw
+        required: true
+        schema:
+          type: object
+      - description: your nickname
+        in: body
+        name: nickname
+        required: true
+        schema:
+          type: object
+      - description: your email
+        in: body
+        name: email
+        required: true
+        schema:
+          type: object
+      - description: your phone_number
+        in: body
+        name: phone_number
+        required: true
+        schema:
+          type: object
+      - description: your group
+        in: body
+        name: group
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.DataRes'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.ErrorRes'
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.ErrorRes'
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/util.ErrorRes'
+            type: object
+      summary: Register
+      tags:
+      - user register
+swagger: "2.0"
