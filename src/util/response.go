@@ -1,3 +1,6 @@
+/*
+the file response.go response to the client with fixed format
+*/
 package util
 
 import (
@@ -6,30 +9,30 @@ import (
 	"github.com/labstack/echo"
 )
 
-// // ErrorRes 错误返回
-// type ErrorRes struct {
-// 	status int
-// 	errMsg string
-// }
+// ErrorRes ErrorResponse
+type ErrorRes struct {
+	Status int    `json:"status"`
+	ErrMsg string `json:"err_msg"`
+}
 
-// // DataRes 数据返回
-// type DataRes struct {
-// 	status int
-// 	data   interface{}
-// }
+// DataRes DataResponse
+type DataRes struct {
+	Status int         `json:"status"`
+	Data   interface{} `json:"data"`
+}
 
-// RetError 错误返回
+// RetError response error, wrong response
 func RetError(code, status int, errMsg string, c echo.Context) error {
-	return c.JSON(code, map[string]interface{}{
-		"status":  status,
-		"err_msg": errMsg,
+	return c.JSON(code, ErrorRes{
+		Status: status,
+		ErrMsg: errMsg,
 	})
 }
 
-// RetData 数据返回
+// RetData response data, correct response
 func RetData(data interface{}, c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"status": 200,
-		"data":   data,
+	return c.JSON(http.StatusOK, DataRes{
+		Status: 200,
+		Data:   data,
 	})
 }
