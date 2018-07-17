@@ -1,0 +1,19 @@
+{
+  "name": "apidoc-example",
+  "version": "1.0.0",
+  "description": "apiDoc example project",
+  "title": "Custom apiDoc browser title",
+  "url": "https://api.github.com/v1",
+  "header": {
+    "title": "My own header title",
+    "filename": "README.md"
+  },
+  "footer": {
+    "title": "My own footer title",
+    "filename": "README.md"
+  },
+  "template": {
+    "withCompare": true,
+    "withGenerator": true
+  }
+}

@@ -32,6 +32,7 @@ import (
 
 // @host petstore.swagger.io
 // @BasePath /v2
+
 func healthy(c echo.Context) error {
 
 	return c.String(http.StatusOK, "hello world")
@@ -42,10 +43,10 @@ func main() {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	// e.Use(middleware.JWTWithConfig(mid.DefaultJWTConfig))
-	// e.Use(middleware.CSRFWithConfig(mid.DefaultCSRFConfig))
+	e.Use(middleware.JWTWithConfig(mid.DefaultJWTConfig))
+	e.Use(middleware.CSRFWithConfig(mid.DefaultCSRFConfig))
 	//  against cross-site scripting (XSS) attack, content type sniffing, clickjacking, insecure connection and other code injection attacks
-	// e.Use(middleware.Secure())
+	e.Use(middleware.Secure())
 	// 参数验证器
 	e.Validator = &mid.DefaultValidator{Validator: validator.New()}
 

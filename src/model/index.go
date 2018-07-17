@@ -46,9 +46,11 @@ func Login(c echo.Context) error {
 	if err != nil {
 		return util.RetError(http.StatusBadRequest, 400, "参数错误", c)
 	}
+
 	var bcryptPW string
 	var status int
-	err = indexDB.QueryRow("SELECT bcrypt_pw, status FROM user WHERE name=?", user["name"]).Scan(&bcryptPW, &status)
+	var id int
+	err = indexDB.QueryRow("SELECT id, bcrypt_pw, status FROM user WHERE name=?", user["name"]).Scan(&id, &bcryptPW, &status)
 	if err != nil {
 		fmt.Println(err)
 		return util.RetError(http.StatusBadRequest, 400, "密码验证错误", c)
